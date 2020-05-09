@@ -35,34 +35,14 @@ namespace TwitterScraper
         {
             var page = await JsonSerializer
                 .DeserializeAsync<TwitterResponsePage>(await GetResponseStream());
-            Console.Write(page.NewLatentCount);
+
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(page.ItemsHtml);
             
-            var tweet = htmlDocument.DocumentNode.FirstDescendantWithClass("stream-item"); // Throw exception if null
+            var firstTweetElement = htmlDocument.DocumentNode.FirstDescendantWithClass("stream-item"); // Throw exception if null
+            var firstProfileElement = htmlDocument.DocumentNode.FirstDescendantWithClass("js-profile-popup-actionable");
             
-            var text = tweet.FirstDescendantWithClassOrDefault("tweet-text").InnerText;
-
-            var id = long.Parse(
-                tweet.GetAttributeValue("data-item-id", "0"));
-
-            var date = GetDate(tweet);
-
-            var interactions = tweet.Descendants()
-                .Where(node => node.HasClass("ProfileTweet-actionCountForAria"));
-            
-            Console.Read();
-        }
-
-        private static DateTime GetDate(HtmlNode tweet)
-        {
-            string ticksString = tweet
-                .FirstDescendantWithClassOrDefault("_timestamp")
-                .GetAttributeValue("data-time-ms", "");
-
-            long ticks = long.Parse(ticksString);
-            
-            return DateTimeExtensions.FromUnixTime(ticks);
+            var firstTweet = TweetFactory.CreateTweet(firstTweetElement, firstProfileElement);
         }
 
         private async Task<Stream> GetResponseStream()
