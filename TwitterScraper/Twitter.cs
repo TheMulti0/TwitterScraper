@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -7,7 +9,7 @@ using HtmlAgilityPack;
 
 namespace TwitterScraper
 {
-    public class Twitter
+    public class Twitter : ITwitter
     {
         private readonly HttpClient _client;
 
@@ -21,7 +23,6 @@ namespace TwitterScraper
         private void PrepareClientHeaders()
         {
             _client.DefaultRequestHeaders.Add("Accept", "application/json, text/javascript, */*; q=0.01");
-            _client.DefaultRequestHeaders.Add("Referer", $"{TwitterConstants.BaseAddress}/realDonaldTrump");
             _client.DefaultRequestHeaders.Add(
                 "User-Agent",
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8");
@@ -30,25 +31,63 @@ namespace TwitterScraper
             _client.DefaultRequestHeaders.Add("Accept-Language", "en-US");
         }
 
-        public async Task Operate()
+        public async Task<IEnumerable<Tweet>> GetTweets(string query, int pages = 1)
         {
-            var page = await JsonSerializer
-                .DeserializeAsync<TwitterResponsePage>(await GetResponseStream());
+            var totalTweets = new List<Tweet>();
 
-            var htmlDocument = new HtmlDocument();
-            htmlDocument.LoadHtml(page.ItemsHtml);
+            long lastItemId = 0;
+            int remainingPages = pages;
             
-            var firstTweetElement = htmlDocument.DocumentNode.FirstDescendantWithClass("stream-item"); // Throw exception if null
-            var firstProfileElement = htmlDocument.DocumentNode.FirstDescendantWithClass("js-profile-popup-actionable");
-            
-            var firstTweet = TweetFactory.CreateTweet(firstTweetElement, firstProfileElement);
+            while (remainingPages >= 0)
+            {
+                HtmlDocument html = await GetPageHtml(lastItemId);
+
+                var tweets = GetTweetsAndProfilesNodes(html.DocumentNode)
+                    .Select(nodes => TweetFactory.CreateTweet(nodes.tweetNode, nodes.profileNode))
+                    .ToList();
+                
+                totalTweets.AddRange(tweets);
+
+                lastItemId = tweets.Last().Id;
+                remainingPages--;
+            }
+
+            return totalTweets;
         }
 
-        private async Task<Stream> GetResponseStream()
+        private async Task<HtmlDocument> GetPageHtml(long lastItemId)
         {
-            HttpResponseMessage response = await _client.GetAsync(
-                "https://twitter.com/i/profiles/show/realDonaldTrump/timeline/tweets?");
+            _client.DefaultRequestHeaders.Remove("Referer");
+            _client.DefaultRequestHeaders.Add("Referer", $"{TwitterConstants.BaseAddress}/realDonaldTrump");
+
+            var page = await JsonSerializer
+                .DeserializeAsync<TwitterResponsePage>(await GetResponseStream(lastItemId));
+
+            var html = new HtmlDocument();
+            html.LoadHtml(page.ItemsHtml);
+            return html;
+        }
+
+        private async Task<Stream> GetResponseStream(long lastItemId)
+        {
+            string requestUri = $"{TwitterConstants.BaseAddress}/i/profiles/show/realDonaldTrump/timeline/tweets";
+            if (lastItemId != 0)
+            {
+                requestUri += $"?max_position={lastItemId}";
+            }
+            
+            HttpResponseMessage response = await _client.GetAsync(requestUri);
             return await response.Content.ReadAsStreamAsync();
+        }
+
+        private static IEnumerable<(HtmlNode tweetNode, HtmlNode profileNode)> GetTweetsAndProfilesNodes(
+            HtmlNode root)
+        {
+            var tweetNodes = root.WhereDescendantWithClass("stream-item");
+            var profileNodes = root.WhereDescendantWithClass("js-profile-popup-actionable");
+            return tweetNodes.Zip(
+                profileNodes,
+                (tweetNode, profileNode) => (tweetNode, profileNode));
         }
     }
 }

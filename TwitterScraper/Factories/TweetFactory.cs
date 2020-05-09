@@ -27,8 +27,8 @@ namespace TwitterScraper
 
             var text = tweet.FirstDescendantWithClassOrDefault("tweet-text").InnerText;
 
-            var interactions = tweet.Descendants()
-                .Where(node => node.HasClass("ProfileTweet-actionCountForAria"))
+            var interactions = tweet
+                .WhereDescendantWithClass("ProfileTweet-actionCountForAria")
                 .Select(node => node.InnerText)
                 .ToDictionary(
                     s => Regex.Match(s, InteractionPattern).Value,

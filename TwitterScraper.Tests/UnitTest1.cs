@@ -6,9 +6,11 @@ namespace TwitterScraper.Tests
     public class UnitTest1
     {
         [Fact]
-        public Task Test1()
+        public async Task Test1()
         {
-            return new Twitter().Operate();
+            ITwitter twitter = new Twitter();
+
+            var tweets = await twitter.GetTweets("@realDonaldTrump", 2);
         }
     }
 }
