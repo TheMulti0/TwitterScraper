@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitterScraper", "TwitterScraper\TwitterScraper.csproj", "{156A9D99-6A24-4FA7-A2CB-E3BD3570996D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitterScraper.Tests", "TwitterScraper.Tests\TwitterScraper.Tests.csproj", "{EC0756E6-EC38-4B96-9C77-E4874D15F383}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{156A9D99-6A24-4FA7-A2CB-E3BD3570996D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{156A9D99-6A24-4FA7-A2CB-E3BD3570996D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{156A9D99-6A24-4FA7-A2CB-E3BD3570996D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{156A9D99-6A24-4FA7-A2CB-E3BD3570996D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC0756E6-EC38-4B96-9C77-E4874D15F383}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC0756E6-EC38-4B96-9C77-E4874D15F383}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC0756E6-EC38-4B96-9C77-E4874D15F383}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC0756E6-EC38-4B96-9C77-E4874D15F383}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
