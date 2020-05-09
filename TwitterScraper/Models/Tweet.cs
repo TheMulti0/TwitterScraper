@@ -8,7 +8,7 @@ namespace TwitterScraper
 
         public string Url { get; internal set; }
 
-        public string AuthorUsername { get; internal set; }
+        public Author Author { get; internal set; }
 
         public bool IsRetweet { get; internal set; }
 

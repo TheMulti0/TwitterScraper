@@ -10,14 +10,17 @@ namespace TwitterScraper
 
         public static Tweet CreateTweet(HtmlNode tweet, HtmlNode profile)
         {
-            var text = tweet.FirstDescendantWithClassOrDefault("tweet-text").InnerText;
-
             var id = long.Parse(
                 tweet.GetAttributeValue("data-item-id", "0"));
 
-            var url = profile.GetAttributeValue("data-permalink-path", null);
-
+            Author author = AuthorFactory.CreateAuthor(profile);
+            
+            var relativeUrl = profile.GetAttributeValue("data-permalink-path", null);
+            
             var date = GetDate(tweet);
+            
+
+            var text = tweet.FirstDescendantWithClassOrDefault("tweet-text").InnerText;
 
             var interactions = tweet.Descendants()
                 .Where(node => node.HasClass("ProfileTweet-actionCountForAria"));
@@ -25,7 +28,8 @@ namespace TwitterScraper
             return new Tweet
             {
                 Id = id,
-                Url = url,
+                Author = author,
+                Url = $"{TwitterConstants.BaseAddress}{relativeUrl}",
                 PublishDate = date,
                 Text = text
             };

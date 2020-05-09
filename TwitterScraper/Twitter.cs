@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -22,7 +21,7 @@ namespace TwitterScraper
         private void PrepareClientHeaders()
         {
             _client.DefaultRequestHeaders.Add("Accept", "application/json, text/javascript, */*; q=0.01");
-            _client.DefaultRequestHeaders.Add("Referer", "https://twitter.com/realDonaldTrump");
+            _client.DefaultRequestHeaders.Add("Referer", $"{TwitterConstants.BaseAddress}/realDonaldTrump");
             _client.DefaultRequestHeaders.Add(
                 "User-Agent",
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8");
