@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Web;
 using HtmlAgilityPack;
 
 namespace TwitterScraper
@@ -38,12 +39,13 @@ namespace TwitterScraper
             long lastItemId = 0;
             int remainingPages = pages;
             
-            while (remainingPages >= 0)
+            while (remainingPages > 0)
             {
-                HtmlDocument html = await GetPageHtml(lastItemId);
+                HtmlDocument html = await GetPageHtml(query, lastItemId);
 
                 var tweets = GetTweetsAndProfilesNodes(html.DocumentNode)
                     .Select(nodes => TweetFactory.CreateTweet(nodes.tweetNode, nodes.profileNode))
+                    .Where(tweet => tweet != null)
                     .ToList();
                 
                 totalTweets.AddRange(tweets);
@@ -55,25 +57,30 @@ namespace TwitterScraper
             return totalTweets;
         }
 
-        private async Task<HtmlDocument> GetPageHtml(long lastItemId)
+        private async Task<HtmlDocument> GetPageHtml(string query, long lastItemId)
         {
             _client.DefaultRequestHeaders.Remove("Referer");
             _client.DefaultRequestHeaders.Add("Referer", $"{TwitterConstants.BaseAddress}/realDonaldTrump");
 
             var page = await JsonSerializer
-                .DeserializeAsync<TwitterResponsePage>(await GetResponseStream(lastItemId));
+                .DeserializeAsync<TwitterResponsePage>(await GetResponseStream(query, lastItemId));
 
             var html = new HtmlDocument();
             html.LoadHtml(page.ItemsHtml);
             return html;
         }
 
-        private async Task<Stream> GetResponseStream(long lastItemId)
+        private async Task<Stream> GetResponseStream(string query, long lastItemId)
         {
-            string requestUri = $"{TwitterConstants.BaseAddress}/i/profiles/show/realDonaldTrump/timeline/tweets";
+            query = HttpUtility.UrlEncode(query);
+            
+            string requestUri = query.StartsWith("@") 
+                ? $"{TwitterConstants.BaseAddress}/i/profiles/show/{query}/timeline/tweets?" 
+                : $"{TwitterConstants.BaseAddress}/i/search/timeline?f=tweets&vertical=default&q={query}&src=tyah&reset_error_state=false&";
+            
             if (lastItemId != 0)
             {
-                requestUri += $"?max_position={lastItemId}";
+                requestUri += $"max_position={lastItemId}";
             }
             
             HttpResponseMessage response = await _client.GetAsync(requestUri);
