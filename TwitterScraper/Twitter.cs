@@ -2,12 +2,14 @@
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using HtmlAgilityPack;
 
+[assembly: InternalsVisibleTo("TwitterScraper.Tests")]
 namespace TwitterScraper
 {
     /// <inheritdoc />
@@ -48,10 +50,7 @@ namespace TwitterScraper
             {
                 HtmlDocument html = await GetPageHtml(query, lastItemId, token);
 
-                var tweets = GetTweetsAndProfilesNodes(html.DocumentNode)
-                    .Select(nodes => TweetFactory.CreateTweet(nodes.tweetNode, nodes.profileNode))
-                    .Where(tweet => tweet != null)
-                    .ToList();
+                List<Tweet> tweets = ParseHtml(html);
                 
                 totalTweets.AddRange(tweets);
 
@@ -62,6 +61,14 @@ namespace TwitterScraper
             }
 
             return totalTweets;
+        }
+
+        internal static List<Tweet> ParseHtml(HtmlDocument html)
+        {
+            return GetTweetsAndProfilesNodes(html.DocumentNode)
+                .Select(nodes => TweetFactory.CreateTweet(nodes.tweetNode, nodes.profileNode))
+                .Where(tweet => tweet != null)
+                .ToList();
         }
 
         private async Task<HtmlDocument> GetPageHtml(
