@@ -2,6 +2,20 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
+        <PackageId>TheMulti0.TwitterScraper</PackageId>
+        <Title>TwitterScraper</Title>
+        <Description>Scrape the Twitter Frontend API easily and quickly without authentication!</Description>
+        <PackageProjectUrl>https://github.com/TheMulti0/TwitterScraper</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/TheMulti0/TwitterScraper</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>Twitter Scraper TwitterScrapper TwitterApi TwitterFree</PackageTags>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Authors>TheMulti0</Authors>
+        <Copyright>TheMulti0 2020</Copyright>
+        <PackageLicenseUrl>https://github.com/TheMulti0/TwitterScraper/blob/master/LICENSE</PackageLicenseUrl>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <FileVersion>1.0.0</FileVersion>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
