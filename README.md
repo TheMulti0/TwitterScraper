@@ -11,7 +11,7 @@ TwitterScraper can be installed from [NuGet](https://www.nuget.org/packages/TheM
 
 The package can be installed in the NuGet CLI:
 ```ps1
-PM> Install-Package TheMulti0.T'ןאאקרSברשפקר
+PM> Install-Package TheMulti0.TwitterScraper
 ```
 Alternatively, you can use the .NET Core CLI:
 ```bash
