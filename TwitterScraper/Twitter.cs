@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using HtmlAgilityPack;
@@ -32,16 +32,19 @@ namespace TwitterScraper
             _client.DefaultRequestHeaders.Add("Accept-Language", "en-US");
         }
 
-        public async Task<IEnumerable<Tweet>> GetTweets(string query, int pages = 1)
+        public async Task<IEnumerable<Tweet>> GetTweets(
+            string query,
+            int pageCount = 1,
+            CancellationToken token = default)
         {
             var totalTweets = new List<Tweet>();
 
             long lastItemId = 0;
-            int remainingPages = pages;
+            int remainingPageCount = pageCount;
             
-            while (remainingPages > 0)
+            while (remainingPageCount > 0)
             {
-                HtmlDocument html = await GetPageHtml(query, lastItemId);
+                HtmlDocument html = await GetPageHtml(query, lastItemId, token);
 
                 var tweets = GetTweetsAndProfilesNodes(html.DocumentNode)
                     .Select(nodes => TweetFactory.CreateTweet(nodes.tweetNode, nodes.profileNode))
@@ -51,26 +54,34 @@ namespace TwitterScraper
                 totalTweets.AddRange(tweets);
 
                 lastItemId = tweets.Last().Id;
-                remainingPages--;
+                remainingPageCount--;
             }
 
             return totalTweets;
         }
 
-        private async Task<HtmlDocument> GetPageHtml(string query, long lastItemId)
+        private async Task<HtmlDocument> GetPageHtml(
+            string query,
+            long lastItemId,
+            CancellationToken token)
         {
             _client.DefaultRequestHeaders.Remove("Referer");
             _client.DefaultRequestHeaders.Add("Referer", $"{TwitterConstants.BaseAddress}/realDonaldTrump");
 
+            Stream pageStream = await GetResponseStream(query, lastItemId, token);
+            
             var page = await JsonSerializer
-                .DeserializeAsync<TwitterResponsePage>(await GetResponseStream(query, lastItemId));
+                .DeserializeAsync<TwitterResponsePage>(pageStream, cancellationToken: token);
 
             var html = new HtmlDocument();
             html.LoadHtml(page.ItemsHtml);
             return html;
         }
 
-        private async Task<Stream> GetResponseStream(string query, long lastItemId)
+        private async Task<Stream> GetResponseStream(
+            string query,
+            long lastItemId,
+            CancellationToken token)
         {
             query = HttpUtility.UrlEncode(query);
             
@@ -83,7 +94,7 @@ namespace TwitterScraper
                 requestUri += $"max_position={lastItemId}";
             }
             
-            HttpResponseMessage response = await _client.GetAsync(requestUri);
+            HttpResponseMessage response = await _client.GetAsync(requestUri, token);
             return await response.Content.ReadAsStreamAsync();
         }
 
