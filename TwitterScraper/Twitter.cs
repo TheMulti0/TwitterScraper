@@ -80,7 +80,7 @@ namespace TwitterScraper
             CancellationToken token)
         {
             _client.DefaultRequestHeaders.Remove("Referer");
-            _client.DefaultRequestHeaders.Add("Referer", $"{TwitterConstants.BaseAddress}/realDonaldTrump");
+            _client.DefaultRequestHeaders.Add("Referer", $"{TwitterConstants.BaseAddress}/{query}");
 
             Stream pageStream = await GetResponseStream(query, lastItemId, token);
             
