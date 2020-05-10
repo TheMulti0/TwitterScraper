@@ -17,6 +17,9 @@ namespace TwitterScraper
     {
         private readonly HttpClient _client;
 
+        /// <summary>
+        /// </summary>
+        /// <param name="client">Optional http client that the class will use</param>
         public Twitter(HttpClient client = null)
         {
             _client = client ?? new HttpClient();
