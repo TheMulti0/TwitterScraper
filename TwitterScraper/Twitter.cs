@@ -97,11 +97,11 @@ namespace TwitterScraper
             long lastItemId,
             CancellationToken token)
         {
-            query = HttpUtility.UrlEncode(query);
+            string encodedQuery = HttpUtility.UrlEncode(query);
             
             string requestUri = query.StartsWith("@") 
-                ? $"{TwitterConstants.BaseAddress}/i/profiles/show/{query}/timeline/tweets?" 
-                : $"{TwitterConstants.BaseAddress}/i/search/timeline?f=tweets&vertical=default&q={query}&src=tyah&reset_error_state=false&";
+                ? $"{TwitterConstants.BaseAddress}/i/profiles/show/{encodedQuery}/timeline/tweets?" 
+                : $"{TwitterConstants.BaseAddress}/i/search/timeline?f=tweets&vertical=default&q={encodedQuery}&src=tyah&reset_error_state=false&";
             
             if (lastItemId != 0)
             {
