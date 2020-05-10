@@ -2,9 +2,9 @@
 
 namespace TwitterScraper
 {
-    public static class AuthorFactory
+    internal static class UserFactory
     {
-        public static Author CreateAuthor(HtmlNode profile)
+        public static User CreateAuthor(HtmlNode profile)
         {
             var id = long.Parse(
                 profile.GetAttributeValue("data-user-id", "0"));
@@ -13,7 +13,7 @@ namespace TwitterScraper
 
             var name = profile.GetAttributeValue("data-name", null);
 
-            return new Author
+            return new User
             {
                 Id = id,
                 Username = userName,

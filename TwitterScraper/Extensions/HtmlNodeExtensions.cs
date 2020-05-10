@@ -4,7 +4,7 @@ using HtmlAgilityPack;
 
 namespace TwitterScraper
 {
-    public static class HtmlNodeExtensions
+    internal static class HtmlNodeExtensions
     {
         public static HtmlNode FirstDescendantWithClassOrDefault(this HtmlNode node, string _class)
         {

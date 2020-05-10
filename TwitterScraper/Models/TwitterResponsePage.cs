@@ -2,7 +2,7 @@
 
 namespace TwitterScraper
 {
-    public class TwitterResponsePage
+    internal class TwitterResponsePage
     {
         [JsonPropertyName("min_position")]
         public string FirstItem { get; set; }

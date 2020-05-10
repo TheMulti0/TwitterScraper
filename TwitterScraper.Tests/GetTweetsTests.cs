@@ -50,8 +50,9 @@ namespace TwitterScraper.Tests
                 {
                     try
                     {
-                        ITwitter provider = new Twitter();
-                        List<Tweet> items = provider
+                        ITwitter twitter = new Twitter();
+                        
+                        List<Tweet> items = twitter
                             .GetTweets("@realDonaldTrump", token: cts.Token)
                             .Result
                             .ToList();

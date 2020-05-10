@@ -5,7 +5,7 @@ using HtmlAgilityPack;
 
 namespace TwitterScraper
 {
-    public static class TweetFactory
+    internal static class TweetFactory
     {
         private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1);
         private const string InteractionPattern = "[a-zA-Z]+";
@@ -18,7 +18,7 @@ namespace TwitterScraper
                 var id = long.Parse(
                     tweet.GetAttributeValue("data-item-id", "0"));
 
-                Author author = AuthorFactory.CreateAuthor(profile);
+                User author = UserFactory.CreateAuthor(profile);
             
                 var relativeUrl = profile.GetAttributeValue("data-permalink-path", null);
 

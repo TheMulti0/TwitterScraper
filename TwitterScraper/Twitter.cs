@@ -10,6 +10,7 @@ using HtmlAgilityPack;
 
 namespace TwitterScraper
 {
+    /// <inheritdoc />
     public class Twitter : ITwitter
     {
         private readonly HttpClient _client;
@@ -32,6 +33,7 @@ namespace TwitterScraper
             _client.DefaultRequestHeaders.Add("Accept-Language", "en-US");
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Tweet>> GetTweets(
             string query,
             int pageCount = 1,
@@ -55,6 +57,8 @@ namespace TwitterScraper
 
                 lastItemId = tweets.Last().Id;
                 remainingPageCount--;
+                
+                token.ThrowIfCancellationRequested();
             }
 
             return totalTweets;
