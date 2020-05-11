@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Web;
 using HtmlAgilityPack;
 
 namespace TwitterScraper
@@ -44,7 +45,7 @@ namespace TwitterScraper
                     Url = $"{TwitterConstants.BaseAddress}{relativeUrl}",
                     IsRetweet = isRetweet,
                     PublishDate = publishDate,
-                    Text = text,
+                    Text = HttpUtility.HtmlDecode(text),
                     RepliesCount = interactions["replies"],
                     RetweetsCount = interactions["retweets"],
                     LikesCount = interactions["likes"]
