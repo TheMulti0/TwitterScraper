@@ -97,12 +97,10 @@ namespace TwitterScraper
             long lastItemId,
             CancellationToken token)
         {
-            string encodedQuery = HttpUtility.UrlEncode(query);
-            
             string requestUri = query.StartsWith("@") 
-                ? $"{TwitterConstants.BaseAddress}/i/profiles/show/{encodedQuery}/timeline/tweets?" 
-                : $"{TwitterConstants.BaseAddress}/i/search/timeline?f=tweets&vertical=default&q={encodedQuery}&src=tyah&reset_error_state=false&";
-            
+                ? $"{TwitterConstants.BaseAddress}/i/profiles/show/{query.Substring(1)}/timeline/tweets?" 
+                : $"{TwitterConstants.BaseAddress}/i/search/timeline?f=tweets&vertical=default&q={HttpUtility.UrlEncode(query)}&src=tyah&reset_error_state=false&";
+
             if (lastItemId != 0)
             {
                 requestUri += $"max_position={lastItemId}";
